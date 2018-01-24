@@ -14,6 +14,16 @@ if [ ! -z "$HELIOS_PORT_kafka" ]; then
     ADVERTISED_PORT=`echo $HELIOS_PORT_kafka | cut -d':' -f 2`
 fi
 
+# Set the logs dir #log.dirs=/tmp/kafka-logs
+if [ ! -z "$LOG_DIRS" ]; then
+    echo "log dirs: $LOG_DIRS"
+    if grep -q "^log.dirs" $KAFKA_HOME/config/server.properties; then
+        sed -r -i "s/#(log.dirs)=(.*)/\1=$LOG_DIRS/g" $KAFKA_HOME/config/server.properties
+    else
+        echo "log.dirs=$LOG_DIRS" >> $KAFKA_HOME/config/server.properties
+    fi
+fi
+
 # Set the external host and port
 if [ ! -z "$ADVERTISED_HOST" ]; then
     echo "advertised host: $ADVERTISED_HOST"
